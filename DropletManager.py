@@ -8,9 +8,13 @@ class DropletManager:
         self.regions = ["NYC1", "NYC3", "AMS3", "SFO2", "SFO3", "SGP1", "LON1", "FRA1", "TOR1", "BLR1"]
         self.manager = digitalocean.Manager(token=api_token)
         self.Droplet = digitalocean.Droplet
-        self.ip = 0
+        self.ip = None
+        self.user_data = None
 
-    # def import_cloud_init(self):
+    def import_cloud_init(self):
+        with open("cloud_config.yml", 'r') as file:
+            self.user_data = file.read().replace("\n", ' ')
+
     def print_account_info(self):
         print("Account Info: ")
         print("Email", self.manager.get_account().email)
@@ -29,9 +33,14 @@ class DropletManager:
             return False
 
     def create_server(self, region):
-        self.Droplet = digitalocean.Droplet(token=self.manager.token, name='VPNdroplet', region=region.lower(), image='ubuntu-20-04-x64', size_slug='s-1vcpu-1gb', user_data="")
+        self.Droplet = digitalocean.Droplet(token=self.manager.token,
+                                            name='VPNdroplet',
+                                            region=region.lower(),
+                                            image='ubuntu-20-04-x64',
+                                            size_slug='s-1vcpu-1gb',
+                                            user_data=self.user_data)
         self.Droplet.create()
-        time.sleep(30)
+        time.sleep(20)
         self.ip = self.Droplet.load().ip_address
 
     def delete_server(self):
