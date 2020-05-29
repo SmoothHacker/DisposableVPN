@@ -36,4 +36,4 @@ class DropletManager:
 
     def delete_server(self):
         self.Droplet.destroy()
-        print("Droplet Destroyed")
+        print("\nDroplet Destroyed\n")
