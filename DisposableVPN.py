@@ -16,18 +16,27 @@ if not VPN_droplet.check_credentials():
 while True:
     print(26 * "-", "DisposableVPN", 26 * "-")
     print("1. Create Droplet")
-    print("2. Exit")
+    print("2. Regenerate Encryption Keys")
+    print("3. Exit")
     print(67 * "-")
     choice = int(input("Enter your choice: "))
 
     if choice == 1:
+        print(26 * "-", "DisposableVPN", 26 * "-")
         print("Select Region")
-        for x in VPN_droplet.regions:
-            print(x, end=" ")
-
+        num = 1
+        for x, region in VPN_droplet.regions.items():
+            print("\t", x, ". ", region)
+        print(67 * "-")
         regionChoice = input("Enter your region choice: ")
         VPN_droplet.create_server(regionChoice)
     elif choice == 2:
+        print(26 * "-", "DisposableVPN", 26 * "-")
+        print("Now Regenerating Encryption Keys . . . . .")
+        VPN_droplet.generate_keys()
+        print("\nNew Encryption Keys Generated and loaded")
+        print(67 * "-")
+    elif choice == 3:
         print("Now Quitting .....")
         break
     else:
@@ -42,7 +51,6 @@ while True:
         print("External IP: ", VPN_droplet.ip, "\n")
         print("1. Destroy Droplet")
         print(67 * "-")
-
         choice = int(input("Enter your choice: "))
 
         if choice == 1:

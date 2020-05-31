@@ -1,11 +1,16 @@
 import digitalocean
 import time
+import os
 
 
 class DropletManager:
 
     def __init__(self, api_token):
-        self.regions = ["NYC1", "NYC3", "AMS3", "SFO2", "SFO3", "SGP1", "LON1", "FRA1", "TOR1", "BLR1"]
+        self.publickey_client = open(os.path.join(os.getcwd(), "keys", "publickey_client")).read()
+        self.publickey_server = open(os.path.join(os.getcwd(), "keys", "publickey_server")).read()
+        self.privatekey_client = open(os.path.join(os.getcwd(), "keys", "privatekey_client")).read()
+        self.privatekey_server = open(os.path.join(os.getcwd(), "keys", "privatekey_server")).read()
+        self.regions = {1: "NYC1", 2: "NYC3", 3: "AMS3", 4: "SFO2", 5: "SFO3", 6: "SGP1", 7: "LON1", 8: "FRA1", 9: "TOR1", 10: "BLR1"}
         self.manager = digitalocean.Manager(token=api_token)
         self.Droplet = digitalocean.Droplet
         self.ip = None
@@ -32,10 +37,10 @@ class DropletManager:
             print("API Key is invalid")
             return False
 
-    def create_server(self, region):
+    def create_server(self, regionChoice):
         self.Droplet = digitalocean.Droplet(token=self.manager.token,
                                             name='VPNdroplet',
-                                            region=region.lower(),
+                                            region=self.regions[regionChoice],
                                             image='ubuntu-20-04-x64',
                                             size_slug='s-1vcpu-1gb',
                                             user_data=self.user_data)
@@ -46,3 +51,11 @@ class DropletManager:
     def delete_server(self):
         self.Droplet.destroy()
         print("\nDroplet Destroyed\n")
+
+    def generate_keys(self):
+        os.system("cd keys/ && wg genkey | tee privatekey_server | wg pubkey > publickey_server")
+        os.system("cd keys/ && wg genkey | tee privatekey_client | wg pubkey > publickey_client")
+        self.publickey_client = open(os.path.join(os.getcwd(), "keys", "publickey_client")).read()
+        self.publickey_server = open(os.path.join(os.getcwd(), "keys", "publickey_server")).read()
+        self.privatekey_client = open(os.path.join(os.getcwd(), "keys", "privatekey_client")).read()
+        self.privatekey_server = open(os.path.join(os.getcwd(), "keys", "privatekey_server")).read()
