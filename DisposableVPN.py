@@ -1,5 +1,6 @@
 from DropletManager import DropletManager
 import sys
+import platform
 
 
 def load_api_token():
@@ -16,7 +17,8 @@ if not VPN_droplet.check_credentials():
 while True:
     print(26 * "-", "DisposableVPN", 26 * "-")
     print("1. Create Droplet")
-    print("2. Regenerate Encryption Keys")
+    if platform.system() == 'Linux':
+        print("2. Regenerate Encryption Keys")
     print("3. Exit")
     print(67 * "-")
     choice = int(input("Enter your choice: "))
@@ -47,7 +49,7 @@ while True:
     while True:
         # Display menu about destroying server
         print("\n", 26 * "-", "DisposableVPN", 26 * "-")
-        print("Droplet is Live! in ", regionChoice)
+        print("Droplet is Live! in ", VPN_droplet.regions[regionChoice])
         print("External IP: ", VPN_droplet.ip, "\n")
         print("1. Destroy Droplet")
         print(67 * "-")
